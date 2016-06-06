@@ -13,6 +13,7 @@ import android.widget.EditText;
 
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class MyActivity extends AppCompatActivity {
 
@@ -20,13 +21,17 @@ public class MyActivity extends AppCompatActivity {
     public void sendMessage(View view){
         String message;
         EditText newTextMessage;
+        InetAddress myIP;
 
         //Intent intent = new Intent(this, DisplayMessageActivity.class);
         newTextMessage = (EditText)findViewById(R.id.enter_new_text);
         message = newTextMessage.getText().toString();
+        try {
+            myIP = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         System.out.println(message);
-        //InetAddress localip = "127.0.0.1";
-        //Socket s = new Socket("localhost", 8000);
     }
 
     @Override
