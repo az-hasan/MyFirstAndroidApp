@@ -89,7 +89,7 @@ public class MyActivity extends AppCompatActivity {
             URL myURL = null;
 
 
-            //define URL and HttpConnection, open connection to URL
+            //define URL and HttpConnection, open connection to URL, send message
             try {
                 myURL = new URL(url);
                 myHttpsConn = (HttpURLConnection) myURL.openConnection();
@@ -100,7 +100,7 @@ public class MyActivity extends AppCompatActivity {
                 myHttpsConn.setDoOutput(true);
                 myHttpsConn.setRequestMethod("POST");
                 myHttpsConn.setFixedLengthStreamingMode(len);
-                
+
                 outWriter = new OutputStreamWriter(myHttpsConn.getOutputStream());
                 outWriter.write(message);
                 outWriter.flush();
