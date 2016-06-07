@@ -46,8 +46,8 @@ public class MyActivity extends AppCompatActivity {
      *  **/
     public void onClickSendMessage(View view) {
         String message = "";
-        String url = "http://10.0.2.2:8000";
-        //String url = "http://cse-os.qu.edu.qa:8000/challenge";
+        // String url = "http://10.0.2.2:8000";
+        String url = "http://cse-os.qu.edu.qa:8000/challenge";
 
         newTextMessage = (EditText) findViewById(R.id.enter_new_text);
         message = newTextMessage.getText().toString();
