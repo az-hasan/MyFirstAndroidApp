@@ -31,7 +31,6 @@ import javax.net.ssl.SSLHandshakeException;
 public class MyActivity extends AppCompatActivity {
 
     private EditText newTextMessage;
-    private static final String DEBUG_TAG = "HttpExample";
 
     /** called when "Send New Text Message" button is pressed
      *  Gets text from box labelled "enter_new_text"
@@ -41,8 +40,9 @@ public class MyActivity extends AppCompatActivity {
      *  **/
     public void onClickSendMessage(View view) {
         String message = "";
-        String url = "http://10.0.2.2:8000";
-        //String url = "http://httpbin.org/post";
+        //String url = "https://10.0.2.2:8000";
+        String url = "http://cse-os.qu.edu.qa:8000/challenge";
+        //String url = "https://httpbin.org/post";
         int len = 0;
 
 
@@ -100,8 +100,7 @@ public class MyActivity extends AppCompatActivity {
                 myHttpsConn.setDoOutput(true);
                 myHttpsConn.setRequestMethod("POST");
                 myHttpsConn.setFixedLengthStreamingMode(len);
-                System.out.println("set fixed length streaming mode");
-
+                
                 outWriter = new OutputStreamWriter(myHttpsConn.getOutputStream());
                 outWriter.write(message);
                 outWriter.flush();
