@@ -41,8 +41,8 @@ public class MyActivity extends AppCompatActivity {
      *  **/
     public void onClickSendMessage(View view) {
         String message = "";
-        //String url = "https://10.0.2.2:8000";
-        String url = "http://httpbin.org/post";
+        String url = "http://10.0.2.2:8000";
+        //String url = "http://httpbin.org/post";
         int len = 0;
 
 
