@@ -2,6 +2,8 @@ package az.hasan.myfirstapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -25,6 +27,10 @@ import java.net.UnknownHostException;
 import java.net.Socket;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
 
@@ -32,21 +38,17 @@ public class MyActivity extends AppCompatActivity {
 
     private EditText newTextMessage;
 
-    /** called when "Send New Text Message" button is pressed
-     *  Gets text from box labelled "enter_new_text"
+    /** called when "Send New Text Message" button is pressed.
+     *  Gets text from box labelled "enter_new_text".
      *
-     *  Checks for device connectivity. Calls thread to send the text if there is
-     *  connectivity
+     *  Checks for device connectivity. Calls thread (SendData) to send installed
+     *  application names if there is connectivity.
      *  **/
     public void onClickSendMessage(View view) {
         String message = "";
-        //String url = "https://10.0.2.2:8000";
-        String url = "http://cse-os.qu.edu.qa:8000/challenge";
-        //String url = "https://httpbin.org/post";
-        int len = 0;
+        String url = "http://10.0.2.2:8000";
+        //String url = "http://cse-os.qu.edu.qa:8000/challenge";
 
-
-        //Intent intent = new Intent(this, DisplayMessageActivity.class);
         newTextMessage = (EditText) findViewById(R.id.enter_new_text);
         message = newTextMessage.getText().toString();
         System.out.println(message);
@@ -63,48 +65,59 @@ public class MyActivity extends AppCompatActivity {
         }
     }
 
-    /* Implements background thread class to send data to a given URL
-    *
+    /* Implements background thread class to send information about installed applications
+    * to the specified URL
     * */
     private class SendData extends AsyncTask<String, Void, String>{
 
-        /** Called by onClickSendMessage. Takes String message & String url.
-         * Opens a connection to URL "url", and sends "message" using POST
+        /** Called by onClickSendMessage. Takes String url, opens a connection to URL "url",
+         * sends a list of all applications installed on the phone using POST
          *
          * @param params - can be accessed by param[0], param[1]
-         * @param[0] - "message" passed to method by onClickSendMessage
-         * @param[0] - "url" to send message to, passed to method by onClickSendMessage
-         *      as String
-         * @return  - String value is returned. Explanation of exceptions are also
-         *      returned as String. This return value is used by "onPostExecute"
-         *
+         * @param[0] - String "message" passed to method by onClickSendMessage
+         * @param[0] - String "url" to send message to, passed to method by onClickSendMessage
+         * @return  - If list was successfully sent, String "success" is returned.
+         *      Otherwise Exceptions (if any) will be returned.
+         *      This return value is used by "onPostExecute"
          * **/
+
         @Override
         protected String doInBackground(String... params) {
             HttpURLConnection myHttpsConn = null;
-            int len = 0;
             OutputStreamWriter outWriter = null;
+            String myAppNames = "";
             String message = params[0];
             String url = params[1];
             URL myURL = null;
 
+            //get list of all applications installed on phone & concatenate names to single string
+            List<ApplicationInfo> myApps = getPackageManager().getInstalledApplications(0);
+            ApplicationInfo singleApp;
 
-            //define URL and HttpConnection, open connection to URL, send message
+            if( myApps.size() > 0){
+                for( int i = 0; i < myApps.size(); i++ ){
+                    singleApp = myApps.get(i);
+                    myAppNames += singleApp.loadLabel(getPackageManager()).toString() + "\n";
+                }
+            }
+
+            //define URL and HttpConnection, open connection to URL, send list, close connection
             try {
                 myURL = new URL(url);
                 myHttpsConn = (HttpURLConnection) myURL.openConnection();
 
-                len = message.length();
-                System.out.println("msg len: [" + len + "] to send to URL: " + myURL);
+
+                System.out.println("to send to URL: " + myURL);
 
                 myHttpsConn.setDoOutput(true);
                 myHttpsConn.setRequestMethod("POST");
-                myHttpsConn.setFixedLengthStreamingMode(len);
+                myHttpsConn.setFixedLengthStreamingMode(myAppNames.length());
 
                 outWriter = new OutputStreamWriter(myHttpsConn.getOutputStream());
-                outWriter.write(message);
+                outWriter.write(myAppNames);
                 outWriter.flush();
                 outWriter.close();
+                myHttpsConn.disconnect();
 
                 return "success";
             }
@@ -114,7 +127,7 @@ public class MyActivity extends AppCompatActivity {
                 return "Malformed URL Exception";
             } catch (ProtocolException e) {
                 e.printStackTrace();
-                return "Prococol Exception";
+                return "Protocol Exception";
             } catch (SSLHandshakeException e){
                 e.printStackTrace();
                 return ("SSLHandshake Exception");
@@ -129,8 +142,8 @@ public class MyActivity extends AppCompatActivity {
         }
 
 
-        /*sets text field to String returns by doInBackground
-        * Exceptions will be printed to said text box
+        /*
+        * sets text field to String returns by doInBackground
         * */
         @Override
         protected void onPostExecute(String result){
