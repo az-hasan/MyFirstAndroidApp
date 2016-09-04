@@ -1,9 +1,7 @@
 package az.hasan.myfirstapp;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -16,22 +14,14 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.net.UnknownHostException;
-import java.net.Socket;
 import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.ListIterator;
 
-import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLHandshakeException;
 
 public class MyActivity extends AppCompatActivity {
@@ -47,7 +37,7 @@ public class MyActivity extends AppCompatActivity {
     public void onClickSendMessage(View view) {
         String message = "";
         // String url = "http://10.0.2.2:8000";
-        String url = "http://cse-os.qu.edu.qa:8000/challenge";
+        String url = "https://cse-os.qu.edu.qa/challenge";
 
         newTextMessage = (EditText) findViewById(R.id.enter_new_text);
         message = newTextMessage.getText().toString();
@@ -75,7 +65,7 @@ public class MyActivity extends AppCompatActivity {
          *
          * @param params - can be accessed by param[0], param[1]
          * @param[0] - String "message" passed to method by onClickSendMessage
-         * @param[0] - String "url" to send message to, passed to method by onClickSendMessage
+         * @param[1] - String "url" to send message to, passed to method by onClickSendMessage
          * @return  - If list was successfully sent, String "success" is returned.
          *      Otherwise Exceptions (if any) will be returned.
          *      This return value is used by "onPostExecute"
@@ -105,7 +95,6 @@ public class MyActivity extends AppCompatActivity {
             try {
                 myURL = new URL(url);
                 myHttpsConn = (HttpURLConnection) myURL.openConnection();
-
 
                 System.out.println("to send to URL: " + myURL);
 
