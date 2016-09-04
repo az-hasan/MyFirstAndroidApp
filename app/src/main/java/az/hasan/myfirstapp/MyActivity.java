@@ -20,6 +20,9 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.HttpURLConnection;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.net.ssl.SSLHandshakeException;
@@ -36,7 +39,7 @@ public class MyActivity extends AppCompatActivity {
      *  **/
     public void onClickSendMessage(View view) {
         String message = "";
-        // String url = "http://10.0.2.2:8000";
+        //String url = "http://10.0.2.2:8000";
         String url = "https://cse-os.qu.edu.qa/challenge";
 
         newTextMessage = (EditText) findViewById(R.id.enter_new_text);
@@ -52,6 +55,15 @@ public class MyActivity extends AppCompatActivity {
             mySendData.execute(message, url);
         }else{
             newTextMessage.setText("Not Connected to Network");
+        }
+    }
+
+    private class AppInfoComparator implements Comparator<ApplicationInfo>{
+        public int compare(ApplicationInfo a1, ApplicationInfo a2){
+            String name1 = a1.loadLabel(getPackageManager()).toString();
+            String name2 = a2.loadLabel(getPackageManager()).toString();
+
+            return name1.compareTo(name2);
         }
     }
 
@@ -82,6 +94,7 @@ public class MyActivity extends AppCompatActivity {
 
             //get list of all applications installed on phone & concatenate names to single string
             List<ApplicationInfo> myApps = getPackageManager().getInstalledApplications(0);
+            Collections.sort(myApps, new AppInfoComparator());
             ApplicationInfo singleApp;
 
             if( myApps.size() > 0){
@@ -96,15 +109,15 @@ public class MyActivity extends AppCompatActivity {
                 myURL = new URL(url);
                 myHttpsConn = (HttpURLConnection) myURL.openConnection();
 
-                System.out.println("to send to URL: " + myURL);
+                System.out.println("length " + myAppNames.length() + " to send to URL: " + myURL);
+                System.out.println("bytes: " + myAppNames.getBytes().length);
 
                 myHttpsConn.setDoOutput(true);
                 myHttpsConn.setRequestMethod("POST");
-                myHttpsConn.setFixedLengthStreamingMode(myAppNames.length());
+                myHttpsConn.setFixedLengthStreamingMode(myAppNames.getBytes().length);
 
                 outWriter = new OutputStreamWriter(myHttpsConn.getOutputStream());
                 outWriter.write(myAppNames);
-                outWriter.flush();
                 outWriter.close();
                 myHttpsConn.disconnect();
 
